@@ -41,7 +41,7 @@ public class HotelReservation {
     public Map<String, Integer> getCheapestHotels(int weekDays, int weekendDays)
     {
         Map<String, Integer> hotelCosts = new HashMap<>();
-        Map<String, Integer> sortedHotelCosts = new HashMap<>();
+        Map<String, Integer> cheapestHotel = new HashMap<>();
         if (hotelList.size() == 0)
             return null;
         this.hotelList.stream().forEach(
@@ -49,10 +49,10 @@ public class HotelReservation {
         Integer cheap = hotelCosts.values().stream().min(Integer::compare).get();
         hotelCosts.forEach((k, v) -> {
             if (v == cheap)
-                sortedHotelCosts.put(k, v);
+                cheapestHotel.put(k, v);
         });
 
-        return sortedHotelCosts;
+        return cheapestHotel;
     }
 
 
