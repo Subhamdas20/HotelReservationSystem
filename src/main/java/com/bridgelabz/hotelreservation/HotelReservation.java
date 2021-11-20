@@ -78,8 +78,8 @@ public class HotelReservation {
         DayOfWeek endDay = endDate.getDayOfWeek();
         int days = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
         int daysWithoutWeekends = days - 2 * ((days + startDay.getValue()) / 7);
-        int totalWeekDays = (int) daysWithoutWeekends + (startDay == DayOfWeek.SUNDAY ? 1 : 0)
-                + (endDay == DayOfWeek.SUNDAY ? 1 : 0);
+        int totalWeekDays = (int) daysWithoutWeekends + (startDay == DayOfWeek.SUNDAY ? 0 : 1)
+                + (endDay == DayOfWeek.SATURDAY ? 0 : 1+(startDay == DayOfWeek.SATURDAY ? 0 : 1)+(endDay == DayOfWeek.SUNDAY ? 0 : 1));
         return totalWeekDays;
     }
 
@@ -121,6 +121,7 @@ public class HotelReservation {
     }
     /**
      * get the cheapest hotel
+     * for reward customer
      */
     public Map<Hotels, Integer> getCheapestHotelsForRewardCustomers(int weekDays, int weekendDays) {
         Map<Hotels, Integer> hotelCosts = new HashMap<>();
@@ -137,20 +138,21 @@ public class HotelReservation {
 
         return cheapestHotel;
     }
-//    /**
-//     * @param date1 start date
-//     * @param date2 end date
-//     * */
-//    public Map<Hotels, Integer> getCheapestAndBestRatedHotelsForRewardCustomers(String date1, String date2) {
-//        Map<Hotels, Integer> bestHotels = new HashMap<Hotels, Integer>();
-//        Map<Hotels, Integer> cheapestHotels = searchFor(date1, date2);
-//        int highestRating = (cheapestHotels.keySet().stream().max(Comparator.comparingInt(Hotels::getRating)).get())
-//                .getRating();
-//        cheapestHotels.forEach((k, v) -> {
-//            if (k.getRating() == highestRating)
-//                bestHotels.put(k, k.getRating());
-//        });
-//        return bestHotels;
-//    }
+    /**
+     * @param date1 start date
+     * @param date2 end date
+     * for reward customer
+     * */
+    public Map<Hotels, Integer> getCheapestAndBestRatedHotelsForRewardCustomers(String date1, String date2) {
+        Map<Hotels, Integer> bestHotels = new HashMap<Hotels, Integer>();
+        Map<Hotels, Integer> cheapestHotels = searchFor(date1, date2);
+        int highestRating = (cheapestHotels.keySet().stream().max(Comparator.comparingInt(Hotels::getRating)).get())
+                .getRating();
+        cheapestHotels.forEach((k, v) -> {
+            if (k.getRating() == highestRating)
+                bestHotels.put(k, k.getRating());
+        });
+        return bestHotels;
+    }
 
 }
