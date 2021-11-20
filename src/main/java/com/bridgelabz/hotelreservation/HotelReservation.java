@@ -32,7 +32,7 @@ public class HotelReservation {
         int totalDays = totalNumberOfDays(date1, date2);
         int weekDays = totalNumberOfWeekDays(date1, date2);
         int weekendDays = totalDays - weekDays;
-        return getBestRatedHotels(weekDays, weekendDays);
+        return getCheapestHotelsForRewardCustomers(weekDays, weekendDays);
     }
 
     /**
@@ -69,7 +69,7 @@ public class HotelReservation {
     }
 
     /**
-     * use to get total number of week days in booking dates
+     * used to get total number of week days in booking dates
      */
     public int totalNumberOfWeekDays(String date1, String date2) {
         LocalDate startDate = toLocalDate(date1);
@@ -119,4 +119,38 @@ public class HotelReservation {
         });
         return bestRatedHotels;
     }
+    /**
+     * get the cheapest hotel
+     */
+    public Map<Hotels, Integer> getCheapestHotelsForRewardCustomers(int weekDays, int weekendDays) {
+        Map<Hotels, Integer> hotelCosts = new HashMap<>();
+        Map<Hotels, Integer> cheapestHotel = new HashMap<>();
+        if (hotelList.size() == 0)
+            return null;
+        this.hotelList.stream().forEach(
+                n -> hotelCosts.put(n, (n.getRewardsWeekdayRate() * weekDays + n.getRewardsWeekendRate() * weekendDays)));
+        Integer cheap = hotelCosts.values().stream().min(Integer::compare).get();
+        hotelCosts.forEach((k, v) -> {
+            if (v == cheap)
+                cheapestHotel.put(k, v);
+        });
+
+        return cheapestHotel;
+    }
+//    /**
+//     * @param date1 start date
+//     * @param date2 end date
+//     * */
+//    public Map<Hotels, Integer> getCheapestAndBestRatedHotelsForRewardCustomers(String date1, String date2) {
+//        Map<Hotels, Integer> bestHotels = new HashMap<Hotels, Integer>();
+//        Map<Hotels, Integer> cheapestHotels = searchFor(date1, date2);
+//        int highestRating = (cheapestHotels.keySet().stream().max(Comparator.comparingInt(Hotels::getRating)).get())
+//                .getRating();
+//        cheapestHotels.forEach((k, v) -> {
+//            if (k.getRating() == highestRating)
+//                bestHotels.put(k, k.getRating());
+//        });
+//        return bestHotels;
+//    }
+
 }
