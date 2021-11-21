@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class HotelReservation {
-    private List<Hotels> hotelList;
+    private List<Hotels> hotelList ;
 
     public HotelReservation() {
         this.hotelList = new ArrayList<Hotels>();
@@ -30,9 +30,9 @@ public class HotelReservation {
 
     public Map<Hotels, Integer> searchFor(String date1, String date2) {
         int totalDays = totalNumberOfDays(date1, date2);
-        int weekDays = totalNumberOfWeekDays(date1, date2);
-        int weekendDays = totalDays - weekDays;
-        return getCheapestHotelsForRewardCustomers(weekDays, weekendDays);
+        int weekEndDays = totalNumberOfWeekEndDays(date1, date2);
+        int weekDays = totalDays - weekEndDays;
+        return getCheapestHotelsForRewardCustomers(weekDays, weekDays);
     }
 
     /**
@@ -71,16 +71,18 @@ public class HotelReservation {
     /**
      * used to get total number of week days in booking dates
      */
-    public int totalNumberOfWeekDays(String date1, String date2) {
+    public int totalNumberOfWeekEndDays(String date1, String date2) {
+
         LocalDate startDate = toLocalDate(date1);
         LocalDate endDate = toLocalDate(date2);
         DayOfWeek startDay = startDate.getDayOfWeek();
         DayOfWeek endDay = endDate.getDayOfWeek();
         int days = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
-        int daysWithoutWeekends = days - 2 * ((days + startDay.getValue()) / 7);
-        int totalWeekDays = (int) daysWithoutWeekends + (startDay == DayOfWeek.SUNDAY ? 0 : 1)
+        long daysWithWeekends = 0;
+        int totalWeekEndDays = (int) daysWithWeekends + (startDay == DayOfWeek.SUNDAY ? 0 : 1)
                 + (endDay == DayOfWeek.SATURDAY ? 0 : 1+(startDay == DayOfWeek.SATURDAY ? 0 : 1)+(endDay == DayOfWeek.SUNDAY ? 0 : 1));
-        return totalWeekDays;
+        System.out.println(totalWeekEndDays);
+        return totalWeekEndDays;
     }
 
     public LocalDate toLocalDate(String date) {
@@ -146,8 +148,7 @@ public class HotelReservation {
     public Map<Hotels, Integer> getCheapestAndBestRatedHotelsForRewardCustomers(String date1, String date2) {
         Map<Hotels, Integer> bestHotels = new HashMap<Hotels, Integer>();
         Map<Hotels, Integer> cheapestHotels = searchFor(date1, date2);
-        int highestRating = (cheapestHotels.keySet().stream().max(Comparator.comparingInt(Hotels::getRating)).get())
-                .getRating();
+        Integer highestRating = (cheapestHotels.keySet().stream().max(Comparator.comparingInt(Hotels::getRating)).get()).getRating();
         cheapestHotels.forEach((k, v) -> {
             if (k.getRating() == highestRating)
                 bestHotels.put(k, k.getRating());
