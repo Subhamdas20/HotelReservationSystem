@@ -21,7 +21,7 @@ public class TestHotelReservation {
         reserve.addHotel(hotel1);
         reserve.addHotel(hotel2);
         reserve.addHotel(hotel3);
-        Map<Hotels, Integer> result = reserve.searchFor("11Sep2020", "12Sep2020");
+        Map<Hotels, Integer> result = reserve.searchFor("01Sep2021", "30Sep2021");
         result.forEach((k, v) -> System.out.println(k.getName()+ " " + v+" "+k.getRating()));
         Map<Hotels,Integer> expected = new HashMap<>();
         expected.put(hotel3,140);

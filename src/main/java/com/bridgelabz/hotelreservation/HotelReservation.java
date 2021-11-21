@@ -3,6 +3,7 @@ package com.bridgelabz.hotelreservation;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -28,12 +29,19 @@ public class HotelReservation {
         return this.hotelList;
     }
 
-    public Map<Hotels, Integer> searchFor(String date1, String date2) {
-        int totalDays = totalNumberOfDays(date1, date2);
-        int weekEndDays = totalNumberOfWeekEndDays(date1, date2);
-        int weekDays = totalDays - weekEndDays;
-        return getCheapestHotelsForRewardCustomers(weekDays, weekDays);
-    }
+//    public Map<Hotels, Integer> searchFor(String date1, String date2) {
+//        int totalDays = totalNumberOfDays(date1, date2);
+//        int weekEndDays = totalNumberOfWeekEndDays(date1, date2);
+//        int weekDays = totalDays - weekEndDays;
+//        return getCheapestHotelsForRewardCustomers(weekDays, weekDays);
+//    }
+public Map<Hotels, Integer> searchFor(String date1, String date2) {
+
+    int totalDays = totalNumberOfDays(date1, date2);
+    int weekDays = countWeekDays(date1, date2);
+    int weekendDays = totalDays - weekDays;
+    return getCheapestHotelsForRewardCustomers(weekDays, weekDays);
+}
 
     /**
      * get the cheapest hotel
@@ -68,28 +76,41 @@ public class HotelReservation {
         return totalDays;
     }
 
-    /**
-     * used to get total number of week days in booking dates
-     */
-    public int totalNumberOfWeekEndDays(String date1, String date2) {
-
-        LocalDate startDate = toLocalDate(date1);
-        LocalDate endDate = toLocalDate(date2);
-        DayOfWeek startDay = startDate.getDayOfWeek();
-        DayOfWeek endDay = endDate.getDayOfWeek();
-        int days = (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
-        long daysWithWeekends = 0;
-        int totalWeekEndDays = (int) daysWithWeekends + (startDay == DayOfWeek.SUNDAY ? 0 : 1)
-                + (endDay == DayOfWeek.SATURDAY ? 0 : 1+(startDay == DayOfWeek.SATURDAY ? 0 : 1)+(endDay == DayOfWeek.SUNDAY ? 0 : 1));
-        System.out.println(totalWeekEndDays);
-        return totalWeekEndDays;
-    }
-
+/**
+ * format date in ddMMMyyyy format
+ * */
     public LocalDate toLocalDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMyyyy");
         LocalDate localDate = LocalDate.parse(date, formatter);
         return localDate;
     }
+/**
+ * count total number of week days between
+ * @param date1 and
+ * @param date2
+ *
+ * */
+    public int countWeekDays(String date1, String date2) {
+        LocalDate startDate = toLocalDate(date1);
+        LocalDate endDate = toLocalDate(date2);
+        Date startDay = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDay = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDay);
+        int weekDays = 0;
+        while (!calendar.getTime().after(endDay)) {
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            if ((dayOfWeek > 1) && (dayOfWeek < 7)) {
+                weekDays++;
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        System.out.println(weekDays);
+        return weekDays;
+
+    }
+
+
 /**
  * @param date1 start date
  * @param date2 end date
